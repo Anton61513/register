@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Авторизація — Управління заявками</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            darkBg: '#0b1120',
+            cardBg: '#151d30',
+            inputBg: '#1e293b',
+            accentBlue: '#5457cd',
+            accentHover: '#4345b2'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-darkBg text-slate-100 min-h-screen flex items-center justify-center p-4 font-sans">
+
+  <!-- Контейнер формы -->
+  <div class="w-full max-w-md bg-cardBg rounded-3xl p-6 sm:p-8 shadow-2xl relative border border-slate-800/80">
+    
+    <!-- Переключатели Язык и Тема -->
+    <div class="flex justify-between items-center mb-6">
+      <button onclick="toggleLanguage()" class="flex items-center space-x-2 bg-slate-800/80 hover:bg-slate-700 px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-300 transition">
+        <i class="fa-solid fa-globe text-indigo-400"></i>
+        <span id="langLabel">UA</span>
+      </button>
+
+      <button onclick="toggleTheme()" class="w-9 h-9 flex items-center justify-center bg-slate-800/80 hover:bg-slate-700 rounded-xl text-slate-300 transition">
+        <i id="themeIcon" class="fa-solid fa-moon"></i>
+      </button>
+    </div>
+
+    <!-- Иконка и Заголовок -->
+    <div class="text-center mb-6">
+      <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-indigo-600 text-white shadow-lg shadow-indigo-600/30 mb-4">
+        <i class="fa-solid fa-shield-halved text-3xl"></i>
+      </div>
+      <h2 id="authTitle" class="text-2xl font-bold tracking-tight text-white">Авторизація</h2>
+      <p id="authSubtitle" class="text-xs text-slate-400 mt-1.5">Управління заявками та персоналом складу</p>
+    </div>
+
+    <!-- Вкладки: Вхід / Реєстрація -->
+    <div class="flex bg-slate-900/90 p-1.5 rounded-2xl mb-6 border border-slate-800/50">
+      <button type="button" id="tabLogin" onclick="switchAuthTab('login')" class="flex-1 py-2.5 text-xs font-bold rounded-xl bg-indigo-600/30 text-indigo-300 transition duration-200">
+        Вхід
+      </button>
+      <button type="button" id="tabRegister" onclick="switchAuthTab('register')" class="flex-1 py-2.5 text-xs font-bold rounded-xl text-slate-400 hover:text-white transition duration-200">
+        Реєстрація
+      </button>
+    </div>
+
+    <!-- Форма -->
+    <form id="authForm" onsubmit="handleAuthSubmit(event)" class="space-y-4">
+      
+      <!-- Поле: Роль -->
+      <div>
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">РОЛЬ</label>
+        <select id="authRole" onchange="handleRoleOrTabChange()" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm font-medium text-white focus:outline-none focus:border-indigo-500 transition">
+          <option value="admin">Адміністратор</option>
+          <option value="manager">Менеджер</option>
+          <option value="outsource">Виконавець (Аутсорс)</option>
+        </select>
+      </div>
+
+      <!-- Поле: Выбор склада (Только для Администратора) -->
+      <div id="warehouseSelectBox">
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ОБЕРІТЬ СВІЙ СКЛАД *</label>
+        <select id="authWarehouse" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm font-medium text-white focus:outline-none focus:border-indigo-500 transition">
+          <option value="oil">Oil склад (Код 221)</option>
+          <option value="stasi">Стасі склад (Код 222)</option>
+          <option value="kharkiv">Харків склад (Код 223)</option>
+          <option value="dnipro">Дніпро склад (Код 224)</option>
+        </select>
+      </div>
+
+      <!-- Доп. поля только для Регистрации (Имя, Фамилия) -->
+      <div id="nameFieldsBox" class="hidden space-y-4">
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ПРІЗВИЩЕ *</label>
+          <input type="text" id="regLastName" placeholder="Шевченко" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ІМ'Я *</label>
+          <input type="text" id="regFirstName" placeholder="Тарас" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+        </div>
+      </div>
+
+      <!-- Поле: Код доступа -->
+      <div id="codeAccessBox">
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">КОД ДОСТУПУ *</label>
+        <input type="password" id="authCode" placeholder="•••" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+      </div>
+
+      <!-- Поле: Телефон -->
+      <div>
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">НОМЕР ТЕЛЕФОНУ *</label>
+        <input type="tel" id="authPhone" required placeholder="0000000003" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+      </div>
+
+      <!-- Поле: Пароль -->
+      <div>
+        <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-1.5">ПАРОЛЬ *</label>
+        <input type="password" id="authPassword" required placeholder="••••••" class="w-full px-4 py-3 bg-inputBg border border-slate-700/60 rounded-xl text-sm text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 transition">
+      </div>
+
+      <!-- Кнопка отправки -->
+      <button type="submit" id="btnSubmitAuth" class="w-full py-3.5 bg-accentBlue hover:bg-accentHover text-white font-bold rounded-xl text-sm shadow-lg shadow-indigo-600/30 transition duration-200 mt-2">
+        Увійти в акаунт
+      </button>
+    </form>
+  </div>
+
+  <script src="auth_app.js"></script>
+</body>
+</html>
